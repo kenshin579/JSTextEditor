@@ -1,0 +1,59 @@
+<html>
+<head>
+    <title>JSTextEditor</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script src="js/lib/requirejs/require.js"></script>
+    <script type="text/javascript" src="js/config.js"></script>
+    <script type="text/javascript">
+        require(["jstexteditor"], function (jstexteditor) {
+            jstexteditor.init();
+
+        });
+    </script>
+</head>
+<body>
+
+<section>
+    <header contenteditable="true" class="header">
+        Untitled document
+    </header>
+
+    <div class="ui">
+        <div class="toolbar">
+            <button class="printbutton uibutton"/>
+            <button class="undobutton uibutton"/>
+            <button class="redobutton uibutton"/>
+            <button class="cutbutton uibutton"/>
+            <button class="copybutton uibutton"/>
+            <button class="pastebutton uibutton"/>
+            <!--<button class="stylebutton uibutton"/>-->
+            <!--<button class="fontbutton uibutton"/>-->
+            <!--<button class="fontsizebutton uibutton"/>-->
+            <button class="boldbutton uibutton"/>
+            <button class="italicbutton uibutton"/>
+            <button class="underlinebutton uibutton"/>
+            <button class="forecolorbutton uibutton"/>
+            <button class="backcolorbutton uibutton"/>
+            <button class="linkbutton uibutton"/>
+            <button class="imagebutton uibutton"/>
+            <button class="tablebutton uibutton"/>
+            <button class="justifyleftbutton uibutton"/>
+            <button class="justifycenterbutton uibutton"/>
+            <button class="justifyrightbutton uibutton"/>
+            <button class="unorderedlistbutton uibutton"/>
+            <button class="orderedlistbutton uibutton"/>
+            <button class="indentbutton uibutton"/>
+            <button class="outdentbutton uibutton"/>
+        </div>
+    </div>
+
+    <div class="pagebackground">
+        <div class="pagetop">
+        </div>
+        <article contenteditable="true" class="textarea edit">
+            Hello World
+        </article>
+    </div>
+</section>
+</body>
+</html>
