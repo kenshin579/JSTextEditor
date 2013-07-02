@@ -5,7 +5,7 @@
     <script src="js/lib/requirejs/require.js"></script>
     <script type="text/javascript" src="js/config.js"></script>
     <script type="text/javascript">
-        require(["jstexteditor"], function (jstexteditor) {
+        require(["jstexteditor", "domReady!"], function (jstexteditor) {
             jstexteditor.init();
 
         });
@@ -20,40 +20,48 @@
 
     <div class="ui">
         <div class="toolbar">
-            <button class="printbutton uibutton"/>
-            <button class="undobutton uibutton"/>
-            <button class="redobutton uibutton"/>
-            <button class="cutbutton uibutton"/>
-            <button class="copybutton uibutton"/>
-            <button class="pastebutton uibutton"/>
+            <button class="printbutton uibutton" id="print"/>
+            <button class="undobutton uibutton" id="undo"/>
+            <button class="redobutton uibutton" id="redo"/>
+            <button class="cutbutton uibutton" id="cut"/>
+            <button class="copybutton uibutton" id="copy"/>
+            <button class="pastebutton uibutton" id="paste"/>
             <!--<button class="stylebutton uibutton"/>-->
             <!--<button class="fontbutton uibutton"/>-->
             <!--<button class="fontsizebutton uibutton"/>-->
-            <button class="boldbutton uibutton"/>
-            <button class="italicbutton uibutton"/>
-            <button class="underlinebutton uibutton"/>
-            <button class="forecolorbutton uibutton"/>
-            <button class="backcolorbutton uibutton"/>
-            <button class="linkbutton uibutton"/>
-            <button class="imagebutton uibutton"/>
-            <button class="tablebutton uibutton"/>
-            <button class="justifyleftbutton uibutton"/>
-            <button class="justifycenterbutton uibutton"/>
-            <button class="justifyrightbutton uibutton"/>
-            <button class="unorderedlistbutton uibutton"/>
-            <button class="orderedlistbutton uibutton"/>
-            <button class="indentbutton uibutton"/>
-            <button class="outdentbutton uibutton"/>
+            <button class="boldbutton uibutton" id="bold"/>
+            <button class="italicbutton uibutton" id="italic"/>
+            <button class="underlinebutton uibutton" id="underline"/>
+            <button class="forecolorbutton uibutton" id="forecolor"/>
+            <button class="backcolorbutton uibutton" id="backcolor"/>
+            <button class="linkbutton uibutton" id="link"/>
+            <button class="imagebutton uibutton" id="image"/>
+            <button class="tablebutton uibutton" id="table"/>
+            <button class="justifyleftbutton uibutton" id="justifyleft"/>
+            <button class="justifycenterbutton uibutton" id="justifycenter"/>
+            <button class="justifyrightbutton uibutton" id="justifyright"/>
+            <button class="unorderedlistbutton uibutton" id="unorderedlist"/>
+            <button class="orderedlistbutton uibutton" id="orderdlist"/>
+            <button class="indentbutton uibutton" id="indent"/>
+            <button class="outdentbutton uibutton" id="outdent"/>
         </div>
     </div>
 
+    <!--<div id="edit">-->
+    <!--hello world-->
+    <!--</div>-->
+
     <div class="pagebackground">
-        <div class="pagetop">
+        <div class="ruler">
         </div>
-        <article contenteditable="true" class="textarea edit">
-            Hello World
-        </article>
+        <!--<article contenteditable="true" id="edit">-->
+        <!--Article Section - Hello World-->
+        <!--</article>-->
+
+        <iframe width="250" height="170" id="colorpalette" src="colors.html" style="visibility:hidden; position: absolute;"></iframe>
     </div>
 </section>
+<iframe id="edit2" width="100%" height="200px">
+</iframe>
 </body>
 </html>

@@ -29,11 +29,12 @@ header {
     background-color: gainsboro;
 }
 
-.pagetop {
+.ruler {
     background: url("/images/ruler.png");
     background-repeat: no-repeat;
     background-color: gainsboro;
     height: 20px;
+    margin-top: 10px;
     margin-left: 70px;
 }
 
@@ -73,7 +74,11 @@ a:hover {
  * UI BUTTON
  *********************************************/
 
-.toolbar {height: 25px; background-color: whitesmoke;}
+.toolbar {
+    background-color: whitesmoke;
+    height: 30px;
+    line-height: 50px;
+}
 
 .uibutton {
     background-position: center;
