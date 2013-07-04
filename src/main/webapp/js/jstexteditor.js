@@ -50,14 +50,6 @@ define([], function () {
         var evt = event ? event : window.event;
 
         this.style.border="inset 1px";
-
-        if (evt.returnValue) { // IE
-            evt.returnValue = false;
-        } else if (evt.preventDefault) {
-            evt.preventDefault();
-        } else {
-            return false; // 왜 boolean을 return해야 하나?
-        }
     }
 
     function btnMouseUp() {
