@@ -1,9 +1,12 @@
 define([], function () {
     var editorFrame, editorDoc;
+    var srcFrame;
 
     function init() {
         editorFrame = document.getElementById("editor-frame");
         editorDoc = editorFrame.contentDocument || editorFrame.contentWindow.document; //IE 호환성
+        srcFrame = document.getElementById("src-frame");
+
         console.log("init");
         initToolbarButtons();
     }
@@ -35,6 +38,7 @@ define([], function () {
     }
 
     function hidecolorpanel() {
+        console.log("hidecolorpanel");
         document.getElementById("colorpalette").style.visibility="hidden";
     }
 
@@ -46,9 +50,7 @@ define([], function () {
         this.style.border="none";
     }
 
-    function btnMouseDown(event) {
-        var evt = event ? event : window.event;
-
+    function btnMouseDown() {
         this.style.border="inset 1px";
     }
 
@@ -56,41 +58,16 @@ define([], function () {
         this.style.border="outset 1px";
     }
 
-    function getOffsetTop(element) {
-        var mOffsetTop = element.offsetTop;
-        var mOffsetParent = element.offsetParent;
-
-        while(mOffsetParent){ // 이게 왜 필요한지 아직 모르겠음
-            mOffsetTop += mOffsetParent.offsetTop;
-            mOffsetParent = mOffsetParent.offsetParent;
-        }
-
-        return mOffsetTop;
-    }
-
-    function getOffsetLeft(element) {
-        var mOffsetLeft = element.offsetLeft;
-        var mOffsetParent = element.offsetParent;
-
-        while(mOffsetParent){
-            mOffsetLeft += mOffsetParent.offsetLeft;
-            mOffsetParent = mOffsetParent.offsetParent;
-        }
-
-        return mOffsetLeft;
-    }
     function btnClick() {
         if ((this.id == "forecolor") || (this.id == "backcolor")) {
+            parent.command = this.id;
             buttonElement = document.getElementById(this.id);
-            console.log("left: " + getOffsetLeft(buttonElement));
-            console.log("top: " + getOffsetTop(buttonElement) + buttonElement.offsetHeight);
-            document.getElementById("colorpalette").style.left = getOffsetLeft(buttonElement);
-            document.getElementById("colorpalette").style.top = getOffsetTop(buttonElement) + buttonElement.offsetHeight;
+            document.getElementById("colorpalette").style.left = buttonElement.offsetLeft;
+            document.getElementById("colorpalette").style.top = buttonElement.offsetTop + buttonElement.offsetHeight;
             document.getElementById("colorpalette").style.visibility="visible";
         } else if (this.id == "print") {
             printDocument();
         } else if (this.id == "link") {
-            console.log("link");
             var stringURL = prompt("Enter a URL:", "http://");
             if ((stringURL != null) && (stringURL != "")) {
                 editorDoc.execCommand("CreateLink", false, stringURL);
@@ -103,7 +80,10 @@ define([], function () {
             }
         } else if (this.id == "table") {
             console.log("table");
-        } else {
+        } else if (this.id == "html") {
+            console.log("html");
+        }
+        else {
             console.log("else: " + this.id);
             editorDoc.execCommand(this.id, false, null);
         }
