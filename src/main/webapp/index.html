@@ -40,28 +40,23 @@
             <button class="justifyleftbutton uibutton" id="justifyleft"/>
             <button class="justifycenterbutton uibutton" id="justifycenter"/>
             <button class="justifyrightbutton uibutton" id="justifyright"/>
-            <button class="unorderedlistbutton uibutton" id="unorderedlist"/>
-            <button class="orderedlistbutton uibutton" id="orderdlist"/>
+            <button class="unorderedlistbutton uibutton" id="insertunorderedlist"/>
+            <button class="orderedlistbutton uibutton" id="insertorderedlist"/>
             <button class="indentbutton uibutton" id="indent"/>
             <button class="outdentbutton uibutton" id="outdent"/>
+            <button class="htmlbutton uibutton" id="html"/>
         </div>
     </div>
-
-    <!--<div id="edit">-->
-    <!--hello world-->
-    <!--</div>-->
 
     <div class="pagebackground">
         <div class="ruler">
         </div>
-        <!--<article contenteditable="true" id="edit">-->
-        <!--Article Section - Hello World-->
-        <!--</article>-->
-
-        <iframe width="250" height="170" id="colorpalette" src="colors.html" style="visibility:hidden; position: absolute;"></iframe>
+        <iframe id="editor-frame" width="100%" height="100%">
+            <p>Your browser does not support iframes.</p>
+        </iframe>
+        <iframe width="250" height="170" id="colorpalette" src="colors.html" style="visibility:hidden; position: absolute;"/>
     </div>
 </section>
-<iframe id="edit2" width="100%" height="200px">
-</iframe>
+<iframe id="src-frame" width="100%" height="100%"/>
 </body>
 </html>

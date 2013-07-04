@@ -71,6 +71,15 @@ a:hover {
 }
 
 /*********************************************
+ * Edit Frame
+ *********************************************/
+iframe#editor-frame {
+    background-color: white;
+    border:1px solid #ccc;
+    width:100%; height:100%;
+}
+
+/*********************************************
  * UI BUTTON
  *********************************************/
 
@@ -112,3 +121,4 @@ a:hover {
 .orderedlistbutton { background: url('/images/orderedlist.gif'); background-repeat: no-repeat;}
 .indentbutton { background: url('/images/indent.gif'); background-repeat: no-repeat;}
 .outdentbutton { background: url('/images/outdent.gif'); background-repeat: no-repeat;}
+.htmlbutton { background: url('/images/html.png'); background-repeat: no-repeat;}
