@@ -1,11 +1,13 @@
 define([], function () {
     var editorFrame, editorDoc;
-    var srcFrame;
+    var srcFrame, srcDoc;
+    var htmlchecked = false;
 
     function init() {
         editorFrame = document.getElementById("editor-frame");
         editorDoc = editorFrame.contentDocument || editorFrame.contentWindow.document; //IE 호환성
         srcFrame = document.getElementById("src-frame");
+        srcDoc = srcFrame.contentDocument || srcFrame.contentWindow.document; //IE 호환성
 
         console.log("init");
         initToolbarButtons();
@@ -61,7 +63,7 @@ define([], function () {
     function btnClick() {
         if ((this.id == "forecolor") || (this.id == "backcolor")) {
             parent.command = this.id;
-            buttonElement = document.getElementById(this.id);
+            var buttonElement = document.getElementById(this.id);
             document.getElementById("colorpalette").style.left = buttonElement.offsetLeft;
             document.getElementById("colorpalette").style.top = buttonElement.offsetTop + buttonElement.offsetHeight;
             document.getElementById("colorpalette").style.visibility="visible";
@@ -81,13 +83,23 @@ define([], function () {
         } else if (this.id == "table") {
             console.log("table");
         } else if (this.id == "html") {
-            console.log("html");
+            if (htmlchecked) {
+                document.getElementById("src-frame").style.visibility="hidden";
+                htmlchecked = false;
+            } else {
+                htmlchecked = true;
+                var htmlText = document.createTextNode(editorDoc.body.innerHTML);
+                srcDoc.body.innerHTML = "";
+                htmlText = editorDoc.importNode(htmlText, false);
+                srcDoc.body.appendChild(htmlText);
+                document.getElementById("src-frame").style.visibility="visible";
+
+            }
         }
         else {
             console.log("else: " + this.id);
             editorDoc.execCommand(this.id, false, null);
         }
-
     }
 
     function printDocument() {
