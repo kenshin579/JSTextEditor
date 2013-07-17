@@ -3,6 +3,12 @@ define([], function () {
     var srcFrame, srcDoc;
     var htmlchecked = false;
 
+    var NODETYPE = {
+        ELEMENT_NODE : 1,
+        ATTRIBUTE_NODE : 2,
+        TEXT_NODE : 3
+    };
+
     function init() {
         editorFrame = document.getElementById("editor-frame");
         editorDoc = editorFrame.contentDocument || editorFrame.contentWindow.document; //IE 호환성
@@ -60,6 +66,76 @@ define([], function () {
         this.style.border="outset 1px";
     }
 
+    function insertNodeAtSelection(editorFrameWindows, insertTableNode)
+    {
+        // get current selection
+        var selObj = editorFrameWindows.getSelection();
+        console.log("selectedText: " + selObj.toString());
+
+        // get the first range of the selection
+        // (there's almost always only one range)
+        var range = selObj.getRangeAt(0);
+
+        // deselect everything
+        selObj.removeAllRanges();
+
+        // remove content of current selection from document
+        range.deleteContents();
+
+        // get location of current selection
+        var container = range.startContainer;
+        var pos = range.startOffset;
+
+        // make a new range for the new selection
+        range=document.createRange();
+
+        if (container.nodeType == NODETYPE.TEXT_NODE && insertTableNode.nodeType == NODETYPE.TEXT_NODE) {
+            // if we insert text in a textnode, do optimized insertion
+            container.insertData(pos, insertTableNode.nodeValue);
+
+            // put cursor after inserted text
+            range.setEnd(container, pos+insertTableNode.length);
+            range.setStart(container, pos+insertTableNode.length);
+
+        } else {
+            var afterNode;
+            if (container.nodeType ==  NODETYPE.TEXT_NODE) {
+                // when inserting into a textnode
+                // we create 2 new textnodes
+                // and put the insertNode in between
+
+                var textNode = container;
+                container = textNode.parentNode;
+                var text = textNode.nodeValue;
+
+                // text before the split
+                var textBefore = text.substr(0,pos);
+                // text after the split
+                var textAfter = text.substr(pos);
+
+                var beforeNode = document.createTextNode(textBefore);
+                afterNode = document.createTextNode(textAfter);
+
+                // insert the 3 new nodes before the old one
+                container.insertBefore(afterNode, textNode);
+                container.insertBefore(insertTableNode, afterNode);
+                container.insertBefore(beforeNode, insertTableNode);
+
+                // remove the old node
+                container.removeChild(textNode);
+
+            } else {
+                // else simply insert the node
+                afterNode = container.childNodes[pos];
+                container.insertBefore(insertTableNode, afterNode);
+            }
+
+            range.setEnd(afterNode, 0);
+            range.setStart(afterNode, 0);
+        }
+        selObj.addRange(range);
+    };
+
     function btnClick() {
         if ((this.id == "forecolor") || (this.id == "backcolor")) {
             parent.command = this.id;
@@ -82,18 +158,40 @@ define([], function () {
             }
         } else if (this.id == "table") {
             console.log("table");
+            rowstext = prompt("enter rows");
+            colstext = prompt("enter cols");
+            rows = parseInt(rowstext);
+            cols = parseInt(colstext);
+            if ((rows > 0) && (cols > 0)) {
+                table = editorDoc.createElement("table");
+                table.setAttribute("border", "1");
+                table.setAttribute("cellpadding", "2");
+                table.setAttribute("cellspacing", "2");
+                tbody = editorDoc.createElement("tbody");
+                for (var i=0; i < rows; i++) {
+                    tr = editorDoc.createElement("tr");
+                    for (var j=0; j < cols; j++) {
+                        td = editorDoc.createElement("td");
+                        br = editorDoc.createElement("br");
+                        td.appendChild(br);
+                        tr.appendChild(td);
+                    }
+                    tbody.appendChild(tr);
+                }
+                table.appendChild(tbody);
+                insertNodeAtSelection(editorFrame.contentWindow, table);
+            }
         } else if (this.id == "html") {
             if (htmlchecked) {
                 document.getElementById("src-frame").style.visibility="hidden";
                 htmlchecked = false;
             } else {
                 htmlchecked = true;
-                var htmlText = document.createTextNode(editorDoc.body.innerHTML);
+                var htmlNode = document.createTextNode(editorDoc.body.innerHTML);
                 srcDoc.body.innerHTML = "";
-                htmlText = editorDoc.importNode(htmlText, false);
-                srcDoc.body.appendChild(htmlText);
+                htmlNode = editorDoc.importNode(htmlNode, false);
+                srcDoc.body.appendChild(htmlNode);
                 document.getElementById("src-frame").style.visibility="visible";
-
             }
         }
         else {
