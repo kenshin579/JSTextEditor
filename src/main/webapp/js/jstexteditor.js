@@ -1,5 +1,5 @@
 define([], function () {
-    var editorFrame, editorDoc;
+    var editorFrame, editorDoc, selRange;
     var srcFrame, srcDoc;
     var htmlchecked = false;
 
@@ -192,6 +192,16 @@ define([], function () {
                 htmlNode = editorDoc.importNode(htmlNode, false);
                 srcDoc.body.appendChild(htmlNode);
                 document.getElementById("src-frame").style.visibility="visible";
+            }
+        } else if (this.id == "copy") {
+            if (window.getSelection()) {
+                selRange = editorFrame.contentWindow.getSelection().toString();
+            }
+        } else if (this.id == "paste") {
+            editorDoc.write(selRange);
+        } else if (this.id == "cut") {
+            if (window.getSelection()) {
+                editorFrame.contentWindow.getSelection().getRangeAt(0).deleteContents();
             }
         }
         else {
