@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript">
+        function TestBoundary () {
+            var mySpan = document.getElementById ("mySpan");
+            if (document.createRange) {     // all browsers, except IE before version 9
+                var myRange = document.createRange ();
+
+                myRange.selectNodeContents (mySpan);
+                console.log ("The range starts at the " + myRange.startOffset + ". child of the " + myRange.startContainer.tagName + " element.");
+                console.log ("The range ends at the " + myRange.endOffset + ". child of the " + myRange.endContainer.tagName + " element.");
+
+                var textNode = mySpan.firstChild;
+                myRange.selectNodeContents (textNode);
+                console.log ("The range starts at the " + myRange.startOffset + ". character position of the textNode element.");
+                console.log ("The range ends at the " + myRange.endOffset + ". character position of the textNode element.");
+            }
+            else {
+                alert ("Your browser does not support this example!");
+            }
+        }
+    </script>
+</head>
+
+<body>
+<button onclick="TestBoundary ()">Test the boundary positions of a range!</button>
+<br /><br />
+<span id="mySpan">The length of this text is 30.</span>
+</body>
+
+</html>

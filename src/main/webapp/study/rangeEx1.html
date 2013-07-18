@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript">
+        function RemoveContent () {
+            var srcObj = document.getElementById ("src");
+
+            if (document.createRange) {     // all browsers, except IE before version 9
+                var rangeObj = document.createRange ();
+                rangeObj.selectNodeContents (srcObj);
+                rangeObj.deleteContents ();
+            }
+            else {      // Internet Explorer before version 9
+                var rangeObj = document.body.createTextRange ();
+                rangeObj.moveToElementText (srcObj);
+                rangeObj.select ();
+                rangeObj.execCommand ('cut');
+            }
+        }
+    </script>
+</head>
+<body>
+<div id="src" style="background-color:#e0a0b0; width:300px; height:50px;">
+    The <b>contents</b> of the <i>source</i> element.
+</div>
+<br /><br />
+<button onclick="RemoveContent ();">Remove the contents of the source element!</button>
+</body>
+</html>
+
+

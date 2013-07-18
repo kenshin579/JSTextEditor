@@ -1,9 +1,20 @@
 define([], function () {
-    var editorFrame, editorDoc, selRange;
+    var editorFrame, editorDoc;
+    var srcFrame, srcDoc;
+    var htmlchecked = false;
+
+    var NODETYPE = {
+        ELEMENT_NODE : 1,
+        ATTRIBUTE_NODE : 2,
+        TEXT_NODE : 3
+    };
 
     function init() {
         editorFrame = document.getElementById("editor-frame");
         editorDoc = editorFrame.contentDocument || editorFrame.contentWindow.document; //IE 호환성
+        srcFrame = document.getElementById("src-frame");
+        srcDoc = srcFrame.contentDocument || srcFrame.contentWindow.document; //IE 호환성
+
         console.log("init");
         initToolbarButtons();
     }
@@ -35,6 +46,7 @@ define([], function () {
     }
 
     function hidecolorpanel() {
+        console.log("hidecolorpanel");
         document.getElementById("colorpalette").style.visibility="hidden";
     }
 
@@ -46,9 +58,7 @@ define([], function () {
         this.style.border="none";
     }
 
-    function btnMouseDown(event) {
-        var evt = event ? event : window.event;
-
+    function btnMouseDown() {
         this.style.border="inset 1px";
     }
 
@@ -56,41 +66,86 @@ define([], function () {
         this.style.border="outset 1px";
     }
 
-    function getOffsetTop(element) {
-        var mOffsetTop = element.offsetTop;
-        var mOffsetParent = element.offsetParent;
+    function insertNodeAtSelection(editorFrameWindows, insertTableNode)
+    {
+        // get current selection
+        var selObj = editorFrameWindows.getSelection();
+        console.log("selectedText: " + selObj.toString());
 
-        while(mOffsetParent){ // 이게 왜 필요한지 아직 모르겠음
-            mOffsetTop += mOffsetParent.offsetTop;
-            mOffsetParent = mOffsetParent.offsetParent;
+        // get the first range of the selection
+        // (there's almost always only one range)
+        var range = selObj.getRangeAt(0);
+
+        // deselect everything
+        selObj.removeAllRanges();
+
+        // remove content of current selection from document
+        range.deleteContents();
+
+        // get location of current selection
+        var container = range.startContainer;
+        var pos = range.startOffset;
+
+        // make a new range for the new selection
+        range=document.createRange();
+
+        if (container.nodeType == NODETYPE.TEXT_NODE && insertTableNode.nodeType == NODETYPE.TEXT_NODE) {
+            // if we insert text in a textnode, do optimized insertion
+            container.insertData(pos, insertTableNode.nodeValue);
+
+            // put cursor after inserted text
+            range.setEnd(container, pos+insertTableNode.length);
+            range.setStart(container, pos+insertTableNode.length);
+
+        } else {
+            var afterNode;
+            if (container.nodeType ==  NODETYPE.TEXT_NODE) {
+                // when inserting into a textnode
+                // we create 2 new textnodes
+                // and put the insertNode in between
+
+                var textNode = container;
+                container = textNode.parentNode;
+                var text = textNode.nodeValue;
+
+                // text before the split
+                var textBefore = text.substr(0,pos);
+                // text after the split
+                var textAfter = text.substr(pos);
+
+                var beforeNode = document.createTextNode(textBefore);
+                afterNode = document.createTextNode(textAfter);
+
+                // insert the 3 new nodes before the old one
+                container.insertBefore(afterNode, textNode);
+                container.insertBefore(insertTableNode, afterNode);
+                container.insertBefore(beforeNode, insertTableNode);
+
+                // remove the old node
+                container.removeChild(textNode);
+
+            } else {
+                // else simply insert the node
+                afterNode = container.childNodes[pos];
+                container.insertBefore(insertTableNode, afterNode);
+            }
+
+            range.setEnd(afterNode, 0);
+            range.setStart(afterNode, 0);
         }
+        selObj.addRange(range);
+    };
 
-        return mOffsetTop;
-    }
-
-    function getOffsetLeft(element) {
-        var mOffsetLeft = element.offsetLeft;
-        var mOffsetParent = element.offsetParent;
-
-        while(mOffsetParent){
-            mOffsetLeft += mOffsetParent.offsetLeft;
-            mOffsetParent = mOffsetParent.offsetParent;
-        }
-
-        return mOffsetLeft;
-    }
     function btnClick() {
         if ((this.id == "forecolor") || (this.id == "backcolor")) {
-            buttonElement = document.getElementById(this.id);
-            console.log("left: " + getOffsetLeft(buttonElement));
-            console.log("top: " + getOffsetTop(buttonElement) + buttonElement.offsetHeight);
-            document.getElementById("colorpalette").style.left = getOffsetLeft(buttonElement);
-            document.getElementById("colorpalette").style.top = getOffsetTop(buttonElement) + buttonElement.offsetHeight;
+            parent.command = this.id;
+            var buttonElement = document.getElementById(this.id);
+            document.getElementById("colorpalette").style.left = buttonElement.offsetLeft;
+            document.getElementById("colorpalette").style.top = buttonElement.offsetTop + buttonElement.offsetHeight;
             document.getElementById("colorpalette").style.visibility="visible";
         } else if (this.id == "print") {
             printDocument();
         } else if (this.id == "link") {
-            console.log("link");
             var stringURL = prompt("Enter a URL:", "http://");
             if ((stringURL != null) && (stringURL != "")) {
                 editorDoc.execCommand("CreateLink", false, stringURL);
@@ -101,23 +156,48 @@ define([], function () {
             if ((imagePath != null) && (imagePath != "")) {
                 editorDoc.execCommand('InsertImage', false, imagePath);
             }
-        } else if (this.id == "copy") {
-            if (window.getSelection()) {
-                selRange = editorFrame.contentWindow.getSelection().toString();
-            }
-        } else if (this.id == "paste") {
-            editorDoc.write(selRange);
-        } else if (this.id == "cut") {
-            if (window.getSelection()) {
-                editorFrame.contentWindow.getSelection().getRangeAt(0).deleteContents();
-            }
         } else if (this.id == "table") {
             console.log("table");
-        } else {
+            rowstext = prompt("enter rows");
+            colstext = prompt("enter cols");
+            rows = parseInt(rowstext);
+            cols = parseInt(colstext);
+            if ((rows > 0) && (cols > 0)) {
+                table = editorDoc.createElement("table");
+                table.setAttribute("border", "1");
+                table.setAttribute("cellpadding", "2");
+                table.setAttribute("cellspacing", "2");
+                tbody = editorDoc.createElement("tbody");
+                for (var i=0; i < rows; i++) {
+                    tr = editorDoc.createElement("tr");
+                    for (var j=0; j < cols; j++) {
+                        td = editorDoc.createElement("td");
+                        br = editorDoc.createElement("br");
+                        td.appendChild(br);
+                        tr.appendChild(td);
+                    }
+                    tbody.appendChild(tr);
+                }
+                table.appendChild(tbody);
+                insertNodeAtSelection(editorFrame.contentWindow, table);
+            }
+        } else if (this.id == "html") {
+            if (htmlchecked) {
+                document.getElementById("src-frame").style.visibility="hidden";
+                htmlchecked = false;
+            } else {
+                htmlchecked = true;
+                var htmlNode = document.createTextNode(editorDoc.body.innerHTML);
+                srcDoc.body.innerHTML = "";
+                htmlNode = editorDoc.importNode(htmlNode, false);
+                srcDoc.body.appendChild(htmlNode);
+                document.getElementById("src-frame").style.visibility="visible";
+            }
+        }
+        else {
             console.log("else: " + this.id);
             editorDoc.execCommand(this.id, false, null);
         }
-
     }
 
     function printDocument() {

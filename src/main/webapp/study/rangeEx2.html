@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript">
+        var storedSelections = [];
+
+        function StoreSelection () {
+            if (window.getSelection) {  // all browsers, except IE before version 9
+                var currSelection = window.getSelection ();
+                for (var i = 0; i < currSelection.rangeCount; i++) {
+                    storedSelections.push (currSelection.getRangeAt (i));
+                }
+                currSelection.removeAllRanges ();
+            } else {
+                alert ("Your browser does not support this example!");
+            }
+        }
+
+        function ClearStoredSelections () {
+            storedSelections.splice (0, storedSelections.length);
+        }
+
+        function ShowStoredSelections () {
+            if (window.getSelection) {
+                var currSelection = window.getSelection ();
+                currSelection.removeAllRanges ();
+                for (var i = 0; i < storedSelections.length; i++) {
+                    currSelection.addRange (storedSelections[i]);
+                }
+            } else {
+                alert ("Your browser does not support this example!");
+            }
+        }
+    </script>
+</head>
+<body>
+Select some content on this page and use the buttons below.<br /><br />
+<button onclick="StoreSelection ();">Store the selection</button>
+<button onclick="ClearStoredSelections ();">Clear stored selections</button>
+<button onclick="ShowStoredSelections ();">Show stored selections</button>
+<br /><br />
+<div>Some text for selection</div>
+<div><b>Some bold text for selection.</b></div>
+</body>
+</html>

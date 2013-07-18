@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript">
+        var storedSelections = [];
+        var rangeObj;
+
+        function SaveSelection (idx) {
+            if (window.getSelection) {  // all browsers, except IE before version 9
+                var selection = window.getSelection ();
+                if (selection.rangeCount > 0) {
+                    storedSelections[idx] = selection.getRangeAt (0);
+                }
+            }
+            else {
+                if (document.selection) {   // Internet Explorer
+                    var range = document.selection.createRange ();
+                    storedSelections[idx] = range.getBookmark ();
+                }
+            }
+        }
+
+
+        function RestoreSelection (idx) {
+            if (window.getSelection) {  // all browsers, except IE before version 9
+                window.getSelection ().removeAllRanges ();
+                window.getSelection ().addRange (storedSelections[idx]);
+            }
+            else {
+                if (document.body.createTextRange) {    // Internet Explorer
+                    rangeObj = document.body.createTextRange ();
+                    rangeObj.moveToBookmark (storedSelections[idx]);
+                    rangeObj.select ();
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+Select any text on this page and then click here:
+<button onclick="SaveSelection (0)">Save bookmark 1!</button>
+<br /><br />
+Now, select another text on this page and then click here:
+<button onclick="SaveSelection (1)">Save bookmark 2!</button>
+<br /><br />
+With the following buttons, the saved selections can be restored:
+<br />
+<button onclick="RestoreSelection (0)">Restore bookmark 1!</button>
+<button onclick="RestoreSelection (1)">Restore bookmark 2!</button>
+</body>
+
+</html>
+
+
+
