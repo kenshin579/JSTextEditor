@@ -1,5 +1,5 @@
 define([], function () {
-    var editorFrame, editorDoc;
+    var editorFrame, editorDoc, selRange;
 
     function init() {
         editorFrame = document.getElementById("editor-frame");
@@ -100,6 +100,16 @@ define([], function () {
             imagePath = prompt('Enter Image URL:', 'http://www.underfives.co.uk/Spring%20Logo%2017.08.08.jpg');
             if ((imagePath != null) && (imagePath != "")) {
                 editorDoc.execCommand('InsertImage', false, imagePath);
+            }
+        } else if (this.id == "copy") {
+            if (window.getSelection()) {
+                selRange = editorFrame.contentWindow.getSelection().toString();
+            }
+        } else if (this.id == "paste") {
+            editorDoc.write(selRange);
+        } else if (this.id == "cut") {
+            if (window.getSelection()) {
+                editorFrame.contentWindow.getSelection().getRangeAt(0).deleteContents();
             }
         } else if (this.id == "table") {
             console.log("table");
