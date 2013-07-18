@@ -1,5 +1,5 @@
 define([], function () {
-    // version 0.2: implemented without execCommand
+    // version 0.1: implemented with execCommand
     var editorFrame, editorDoc, selRange;
     var srcFrame, srcDoc;
     var htmlchecked = false;
